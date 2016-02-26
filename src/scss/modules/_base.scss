@@ -1,0 +1,46 @@
+html,body{
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: Helvetica;
+    cursor: default;
+}
+button,input,textarea{
+    outline: none;
+}
+
+// BASE AND COMMON STYLES
+.pull-left{
+    float: left;
+}
+.pull-right{
+    float: right;
+}
+.text-center{
+    text-align: center;
+}
+.clearfix{
+    clear: both;
+    overflow: hidden;
+    &:before,
+    &:after{
+        display: block;
+        content: '';
+        clear: both;
+    }
+}
+
+// SCSS MIXINS
+@mixin middleCenter($z:1, $p:absolute) {
+    position: $p;
+    z-index: $z;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: auto;
+}
+
+@mixin linearGradient($direction, $color-stops...) {
+  background-image: linear-gradient($direction, $color-stops);
+}

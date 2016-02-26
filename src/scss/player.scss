@@ -1,0 +1,440 @@
+@import "modules/base";
+@import "modules/fonts";
+@import "themes/dark";
+
+::-webkit-scrollbar {
+    width: 2px;
+}
+::-webkit-scrollbar-track {
+    background-color: rgba(#000, 0);
+}
+::-webkit-scrollbar-thumb {
+    background-color: rgba($COLOR_PRIMARY, .4);
+    transition: .3s;
+    &:hover{
+        background-color: $COLOR_PRIMARY;
+    }
+}
+::selection{
+    background-color: rgba(#000, 0);
+}
+
+html{
+    @include linearGradient(to bottom, #417505, #316500);
+}
+
+.player{
+    @include middleCenter;
+    top: -50px;
+    width: 300px;
+    height: 420px;
+    overflow: hidden;
+    background-color: $COLOR_BACKGROUND;
+    border-radius: 10px;
+    box-shadow:
+        0 10px 15px rgba(0,0,0,.15),
+        0 2px 2px rgba(0,0,0,.2);
+    cursor: default;
+    .initing-mask{
+        @include middleCenter;
+        z-index: 50;
+        color: $COLOR_PRIMARY;
+        font-size: 12px;
+        font-weight: bold;
+        line-height: 400px;
+        text-align: center;
+        text-transform: uppercase;
+        background-color: $COLOR_BACKGROUND;
+        pointer-events: none;
+        transition: 1s;
+    }
+    .top-bar{
+        height: 30px;
+        overflow: hidden;
+        background-color: $COLOR_TOPBAR;
+        .traffic-light{
+            height: 12px;
+            margin: 9px;
+            font-size: 0;
+            button{
+                display: inline-block;
+                box-sizing: border-box;
+                width: 12px;
+                height: 12px;
+                margin-right: 8px;
+                padding: 0;
+                border: 1px solid rgba(0,0,0,.1);
+                border-radius: 6px;
+            }
+            .btn-close{
+                background-color: #e74c3c;
+            }
+            .btn-disabled{
+                background-color: #bdc3c7;
+            }
+            .btn-minify{
+                background-color: #2ecc71;
+            }
+        }
+        .caption{
+            height: 30px;
+            margin: 0 100px;
+            padding: 0;
+            overflow: hidden;
+            color: #ccc;
+            font-size: 12px;
+            line-height: 32px;
+            text-transform: uppercase;
+        }
+        .btn-toggle-list{
+            position: relative;
+            box-sizing: border-box;
+            width: 12px;
+            height: 19px;
+            margin: 7px 10px 0 0;
+            padding: 9px 0;
+            background-clip: content-box;
+            background-color: $COLOR_TEXT - 50;
+            border: none;
+            transition: .3s;
+            &:before,
+            &:after{
+                position: absolute;
+                left: 0;
+                width: 12px;
+                height: 1px;
+                background-color: $COLOR_TEXT - 50;
+                content: '';
+                transition: .3s;
+            }
+            &:before{
+                top: 4px;
+            }
+            &:after{
+                bottom: 5px;
+            }
+            &:hover{
+                background-color: $COLOR_PRIMARY;
+                &:before,
+                &:after{
+                    background-color: $COLOR_PRIMARY;
+                }
+            }
+        }
+    }
+    .content{
+        position: relative;
+        width: 300px;
+        height: 300px;
+        overflow: hidden;
+    }
+    .dashboard{
+        position: relative;
+        width: 300px;
+        height: 300px;
+        .cover{
+            width: 300px;
+            height: 300px;
+            background-position: 50% 50%;
+            background-size: 300px 300px;
+            transition: background .6s;
+            -webkit-filter: grayscale(1);
+        }
+        .waveform{
+            @include middleCenter(3);
+            background-color: rgba(0,0,0,.5);
+            background-image:
+                linear-gradient(to bottom, rgba(#000, 1), rgba($COLOR_BACKGROUND, .5), rgba($COLOR_BACKGROUND, 1));
+            canvas{
+                width: 256px;
+                height: 160px;
+                margin: 50px 22px 0 22px;
+            }
+        }
+        .meta{
+            position: absolute;
+            z-index: 4;
+            bottom: 20px;
+            left: 0;
+            width: 300px;
+            height: 48px;
+            h5,h6{
+                width: 200px;
+                height: 24px;
+                margin: 0 auto;
+                padding: 0;
+                overflow: hidden;
+                line-height: 24px;
+                text-transform: uppercase;
+            }
+            h5{
+                color: $COLOR_TEXT;
+                font-size: 18px;
+                font-weight: 500;
+            }
+            h6{
+                color: $COLOR_TEXT - 100;
+                font-size: 12px;
+                font-weight: 300;
+            }
+        }
+    }
+    .play-list{
+        @include middleCenter(5);
+        overflow: auto;
+        background-color: $COLOR_BACKGROUND;
+        opacity: 0;
+        transform: translateY(10px) scale(.9);
+        transition: .4s;
+        pointer-events: none;
+        .songs{
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            li{
+                height: 36px;
+                padding: 0;
+                list-style: none;
+                line-height: 36px;
+                &:nth-child(odd) {
+                    background-color: $COLOR_BACKGROUND + 5;
+                }
+                span,button{
+                    display: block;
+                    width: 36px;
+                    height: 36px;
+                    text-align: center;
+                }
+                span{
+                    float: left;
+                    color: $COLOR_TEXT - 30;
+                    font-size: 12px;
+                    font-weight: bold;
+                }
+                button{
+                    float: right;
+                    color: $COLOR_TEXT - 30;;
+                    background: none;
+                    border: none;
+                    transition: .3s;
+                    &:hover{
+                        color: #a00;
+                    }
+                }
+                h6{
+                    height: 36px;
+                    margin: 0 36px;
+                    padding: 0 5px;
+                    color: $COLOR_TEXT;
+                    font-size: 12px;
+                    font-weight: 300;
+                    overflow: hidden;
+                }
+                &.current{
+                    background-color: $COLOR_PRIMARY;
+                    button{
+                        display: none;
+                    }
+                }
+            }
+        }
+    }
+    .controller{
+        background-color: $COLOR_BACKGROUND;
+        height: 93px;
+        .progress-bar{
+            position: relative;
+            height: 1px;
+            margin-top: -3px;
+            border-top: solid 3px rgba(#000, 0);
+            border-bottom: solid 3px rgba(#000, 0);
+            &:before,
+            .played,
+            .buffered{
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 1px;
+            }
+            &:before{
+                z-index: 0;
+                width: 100%;
+                background-color: lighten($COLOR_BACKGROUND, 20);
+                content: '';
+                transition: .3s;
+            }
+            &:hover{
+                &:before{
+                    background-color: lighten($COLOR_BACKGROUND, 40);
+                }
+            }
+            .played{
+                z-index: 2;
+                width: 12%;
+                background-color: $COLOR_PRIMARY;
+                transition: .1s;
+            }
+            .buffered{
+                z-index: 1;
+                width: 20%;
+                background-color: darken($COLOR_PRIMARY, 30);
+            }
+        }
+        .times{
+            display: none;
+        }
+        .btns{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            height: 80px;
+            font-size: 0;
+            line-height: 0;
+            button{
+                display: inline-block;
+                padding: 0;
+                font-size: 0;
+                line-height: 0;
+                border-radius: 50%;
+                transition: .3s;
+                i{
+                    display: block;
+                    width: 100%;
+                    height: 100%;
+                    text-align: center;
+                }
+            }
+            .btn-toggle-mode,
+            .btn-change-volume{
+                width: 30px;
+                height: 30px;
+                margin: 0 10px;
+                overflow: hidden;
+                color: $COLOR_TEXT - 80;
+                background-color: rgba(#000, 0);
+                border: none;
+                &:hover{
+                    color: $COLOR_PRIMARY;
+                }
+                i{
+                    font-size: 16px;
+                    line-height: 30px;
+                }
+            }
+            .btn-toggle-mode{
+                position: relative;
+                i{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    opacity: 0;
+                    transition: .5s;
+                    transform: scale(1.2) rotate(20deg);
+                }
+                &.mode-1 .icon-repeat,
+                &.mode-2 .icon-shuffle,
+                &.mode-3 .icon-repeat_one{
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            .btn-change-volume{
+                position: relative;
+                i{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    transition: transform .5s, opacity .5s;
+                }
+                &.muted .icon-volume_up,
+                .icon-volume_off{
+                    opacity: 0;
+                    transform: rotate(30deg) scale(1.1);
+                }
+                &.muted .icon-volume_off,
+                .icon-volume_up{
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            .btn-skip-prev,
+            .btn-skip-next,
+            .btn-play-pause{
+                box-sizing: border-box;
+                color: $COLOR_TEXT - 80;
+                background-color: lighten($COLOR_BACKGROUND, 5);
+                border: 2px solid $COLOR_PRIMARY;
+                &:hover{
+                    background-color: lighten($COLOR_BACKGROUND, 10);
+                }
+                &:active{
+                    background-color: lighten($COLOR_BACKGROUND, 30);
+                }
+            }
+            .btn-play-pause{
+                position: relative;
+                i{
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    transition: transform .5s, opacity .5s;
+                }
+                &.playing .icon-play_arrow,
+                .icon-pause{
+                    opacity: 0;
+                    transform: rotate(30deg) scale(1.1);
+                }
+                &.playing .icon-pause,
+                .icon-play_arrow{
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+            .btn-skip-prev,
+            .btn-skip-next{
+                width: 36px;
+                height: 36px;
+                margin: 0 10px;
+                i{
+                    font-size: 18px;
+                    line-height: 32px;
+                }
+            }
+            .btn-play-pause{
+                width: 44px;
+                height: 44px;
+                margin: 0;
+                i{
+                    font-size: 24px;
+                    line-height: 40px;
+                }
+            }
+        }
+    }
+    &.ready{
+        .initing-mask{
+            opacity: 0;
+        }    
+    }
+    &.show-play-list{
+        .btn-toggle-list{
+            background-color: rgba(#000, 0);
+            &:hover{
+                background-color: rgba(#000, 0);
+            }
+            &:before{
+                transform: translateY(4px) rotate(45deg);
+            }
+            &:after{
+                transform: translateY(-5px) rotate(-45deg);
+            }
+        }
+        .play-list{
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: auto;
+        }
+    }
+}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MINI PLAYER</title>
+    <link rel="stylesheet" href="assets/css/player.css">
+</head>
+<div class="player" v-bind:class="{'show-play-list':temp.showlist}" id="player">
+    <div class="initing-mask">
+        <span>Mini Player</span>
+    </div>
+    <div class="top-bar">
+        <div class="traffic-light pull-left">
+            <button class="btn-close"></button>
+            <button class="btn-disabled"></button>
+            <button class="btn-minify"></button>
+        </div>
+        <button class="btn-toggle-list pull-right" v-on:click="toggleList()"></button>
+        <h5 class="caption text-center">Mini Player</h5>
+    </div>
+    <div class="content">
+        <div class="dashboard">
+            <div class="cover" style="background-image:url({{temp.cover || './assets/images/default.png'}});"></div>
+            <div class="waveform">
+                <canvas id="waveform" width="256px" height="100px"></canvas>
+            </div>
+            <div class="meta text-center">
+                <h5>{{temp.name ? temp.name : '迷你播放器'}}</h5>
+                <h6>{{temp.artist ? temp.artist : 'BY MARGOX'}}</h6>
+            </div>
+        </div>
+        <div class="play-list">
+            <ul class="songs">
+                <li v-for="song in playlist" v-bind:class="{'current': song.id === config.current}">
+                    <span>{{$index + 1}}</span>
+                    <button class="btn-remove" v-on:click="removeSong(song.id)"><i class="icon-highlight_remove"></i></button>
+                    <h6 v-on:dblclick="playSong(song.id)">{{song.name}}</h6>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="controller">
+        <div class="progress-bar" v-on:click="jumpProgress">
+            <span class="played" style="width:{{(temp.playedTime / temp.totalTime * 100) || 0}}%;"></span>
+        </div>
+        <div class="times">
+            <span class="played">{{temp.playedTime}}</span>
+            <div class="total">{{temp.titalTime}}</div>
+        </div>
+        <div class="btns text-center">
+            <button class="btn-toggle-mode mode-{{config.mode}}" v-on:click="toggleMode()">
+                <i class="icon-shuffle"></i>
+                <i class="icon-repeat"></i>
+                <i class="icon-repeat_one"></i>
+            </button>
+            <button class="btn-skip-prev" v-on:click="skipPrev()">
+                <i class="icon-skip_previous"></i>
+            </button>
+            <button class="btn-play-pause" v-on:click="playPause()" v-bind:class="{'buffering' : temp.buffering,'playing' : temp.playing}">
+                <i class="icon-play_arrow"></i>
+                <i class="icon-pause"></i>
+            </button>
+            <button class="btn-skip-next" v-on:click="skipNext()">
+                <i class="icon-skip_next"></i>
+            </button>
+            <button class="btn-change-volume" v-bind:class="{'muted' : config.muted}" v-on:mousewheel="changeVolume" v-on:click="toggleMute()">
+                <i class="icon-volume_up"></i>
+                <i class="icon-volume_off"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<script src="./assets/js/libs/vudio/vudio.js"></script>
+<script src="./assets/js/libs/vue.min.js"></script>
+<script src="./assets/js/libs/player.js"></script>
+<script src="./assets/js/app.js"></script>
+</body>
+</html>

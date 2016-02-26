@@ -1,0 +1,11 @@
+$COLOR_PRIMARY: #c0392b;
+$COLOR_TOPBAR: #030303;
+$COLOR_BACKGROUND: #111;
+$COLOR_TEXT: rgba(#fff, .6); 
+
+.controller{
+    background-image:
+        linear-gradient(to top, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px),
+        linear-gradient(to left, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px);
+    background-size: 2px 2px;
+}
