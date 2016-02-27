@@ -29,7 +29,8 @@ app.on('ready', function() {
     //mainWindow.webContents.openDevTools();
 
     mainWindow.on('closed', function() {
-        mainWindow = null;
+        //mainWindow = null;
+        app.quit();
     });
 
 });

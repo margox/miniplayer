@@ -251,8 +251,9 @@ window.Player = (function() {
                     width: 1,
                     color: [
                         [0, '#f00'],
+                        [0.5, '#f00'],
                         [0.5, '#f90'],
-                        [1, '#f00']
+                        [1, '#f90']
                     ],
                     shadowBlur: 20
                 }
@@ -378,9 +379,9 @@ window.Player = (function() {
                 if (item.src) {
                     __result.push({
                         'id' : __that.__getGuid(),
-                        'name' : item.name || 'Unknow Name',
-                        'artist' : item.artist || 'Unknow Artist',
-                        'album' : item.album || 'Unknow Album',
+                        'name' : item.name || '未知歌曲',
+                        'artist' : item.artist || '未知艺术家',
+                        'album' : item.album || '未知专辑',
                         'cover' : item.cover || null,
                         'trashed' : false,
                         'src' : item.src
