@@ -30,7 +30,7 @@ window.Player = (function() {
 
         }
 
-    }    
+    }
 
     function getRandom(min, max) {
 
@@ -45,6 +45,9 @@ window.Player = (function() {
         this.__timmer = null;
         this.__element = document.querySelector('#player');
         this.__init(playlist);
+
+        this.__remote = require('electron').remote;
+        this.__dialog = this.__remote.require('dialog');
 
     }
 
@@ -66,7 +69,7 @@ window.Player = (function() {
 
             this.data = {};
             this.data.playlist = (playlist instanceof Array) ? this.__buildPlayList(playlist) : [];
-            this.data.config = localStorage['__mini_player_config__'] || {
+            this.data.config = localStorage['__mini_player_config__'] ? JSON.parse(localStorage['__mini_player_config__']) : {
                 'volume' : 0.8,
                 'muted' : false,
                 'current' : 0,
@@ -208,8 +211,30 @@ window.Player = (function() {
                     },
                     unlock: function() {
                         this.temp.locked = false;
+                    },
+
+                    // advanced functions
+                    selectLocalAudios: function() {
+                        __that.__dialog.showOpenDialog({
+                            'title' : '添加本地音乐文件',
+                            'properties' : ['openFile', 'multiSelections'],
+                            'filters' : [
+                                {
+                                    'name' : '音乐文件',
+                                    'extensions' : ['mp3']
+                                }
+                            ]
+                        }, function (data) {
+                            __that.__getLocalAudios(data);
+                        });
                     }
                 }
+            });
+            this.vue.$watch('config', function() {
+                localStorage['__mini_player_config__'] = JSON.stringify(this.config);
+            },{deep: true});
+            this.vue.$watch('playlist', function() {
+                this.$emit('playlistchanged', this.playlist);
             });
             return this;
 
@@ -218,6 +243,7 @@ window.Player = (function() {
         __initAudioObj : function() {
             this.audio = new Audio();
             this.audio.volume = this.data.config.volume;
+            this.audio.muted = this.data.config.muted;
             this.audio.autobuffer = true;
             this.vudio = new Vudio(this.audio, document.querySelector('#waveform'), {
                 waveform : {
@@ -266,7 +292,6 @@ window.Player = (function() {
                     }
                     this.temp.playing = true;
                     //clearTimeout(__that.__timmer);
-                    //console.log(__that.__timmer);
                     __that.audio.play();
                     __that.vudio.dance();
                 })
@@ -275,7 +300,6 @@ window.Player = (function() {
                     //__that.__timmer = setTimeout(function() {
                         __that.vudio.pause();
                     //}, 1000);
-                    //console.log(__that.__timmer);
                 })
                 .$on('changeVolume', function(volume) {
                     __that.audio.volume = volume;
@@ -364,6 +388,44 @@ window.Player = (function() {
                 }
             });
             return __result;
+        },
+        __getAudioCover : function(image) {
+            var base64String = "";
+            if (!image) {
+                return null;
+            } else {
+                for (var i = 0; i < image.data.length; i++) {
+                    base64String += String.fromCharCode(image.data[i]);
+                }
+	            return "data:" + image.format + ";base64," + window.btoa(base64String);
+            }
+        },
+        __getLocalAudios : function(pathArray) {
+
+            var __index = 0;
+            var __that = this;
+
+            __getAudioMeta(__index);
+
+            function __getAudioMeta(__index) {
+                if (__index < pathArray.length) {
+                    new jsmediatags.Reader(pathArray[__index])
+                    .read({
+                        onSuccess: function(tag) {
+                            __that.addSongs({
+                                'name' : tag.tags.title,
+                                'album' : tag.tags.album,
+                                'artist' : tag.tags.artist,
+                                'cover' : __that.__getAudioCover(tag.tags.picture),
+                                'src' : pathArray[__index]
+                            });
+                            __index ++;
+                            __getAudioMeta(__index);
+                        }
+                    });
+                }
+            }
+
         },
         __getGuid : function() {
             this.__guid += 1;

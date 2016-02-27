@@ -10,12 +10,8 @@
         <span>Mini Player</span>
     </div>
     <div class="top-bar">
-        <div class="traffic-light pull-left">
-            <button class="btn-close"></button>
-            <button class="btn-disabled"></button>
-            <button class="btn-minify"></button>
-        </div>
         <button class="btn-toggle-list pull-right" v-on:click="toggleList()"></button>
+        <button class="btn-open-folder pull-right" v-on:click="selectLocalAudios()"><i class="icon-folder_open"></i></button>
         <h5 class="caption text-center">Mini Player</h5>
     </div>
     <div class="content">
@@ -71,6 +67,7 @@
     </div>
 </div>
 <script src="./assets/js/libs/vudio/vudio.js"></script>
+<script src="./assets/js/libs/jsmediatags.js"></script>
 <script src="./assets/js/libs/vue.min.js"></script>
 <script src="./assets/js/libs/player.js"></script>
 <script src="./assets/js/app.js"></script>

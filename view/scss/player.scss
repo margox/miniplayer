@@ -20,7 +20,6 @@
 }
 
 html{
-    height: 428px;
     @include linearGradient(to bottom, #417505, #316500);
 }
 
@@ -54,31 +53,6 @@ html{
         background-color: $COLOR_TOPBAR;
         -webkit-app-region: drag;
         -webkit-user-select: none;
-        .traffic-light{
-            display: none;
-            height: 12px;
-            margin: 9px;
-            font-size: 0;
-            button{
-                display: inline-block;
-                box-sizing: border-box;
-                width: 12px;
-                height: 12px;
-                margin-right: 8px;
-                padding: 0;
-                border: 1px solid rgba(0,0,0,.1);
-                border-radius: 6px;
-            }
-            .btn-close{
-                background-color: #e74c3c;
-            }
-            .btn-disabled{
-                background-color: #bdc3c7;
-            }
-            .btn-minify{
-                background-color: #2ecc71;
-            }
-        }
         .caption{
             height: 38px;
             margin: 0 100px;
@@ -122,6 +96,17 @@ html{
                 &:after{
                     background-color: $COLOR_PRIMARY;
                 }
+            }
+        }
+        .btn-open-folder{
+            margin: 9px 3px 0 0;
+            color: $COLOR_TEXT - 50;
+            font-size: 16px;
+            background: none;
+            border: none;
+            transition: .3s;
+            &:hover{
+                color: $COLOR_PRIMARY;
             }
         }
     }
