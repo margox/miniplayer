@@ -20,20 +20,20 @@
 }
 
 html{
+    height: 428px;
     @include linearGradient(to bottom, #417505, #316500);
 }
 
 .player{
     @include middleCenter;
-    top: -50px;
     width: 300px;
-    height: 420px;
+    height: 428px;
     overflow: hidden;
     background-color: $COLOR_BACKGROUND;
-    border-radius: 10px;
-    box-shadow:
-        0 10px 15px rgba(0,0,0,.15),
-        0 2px 2px rgba(0,0,0,.2);
+    // border-radius: 10px;
+    //box-shadow:
+    //    0 10px 15px rgba(0,0,0,.15),
+    //    0 2px 2px rgba(0,0,0,.2);
     cursor: default;
     .initing-mask{
         @include middleCenter;
@@ -49,10 +49,13 @@ html{
         transition: 1s;
     }
     .top-bar{
-        height: 30px;
+        height: 38px;
         overflow: hidden;
         background-color: $COLOR_TOPBAR;
+        -webkit-app-region: drag;
+        -webkit-user-select: none;
         .traffic-light{
+            display: none;
             height: 12px;
             margin: 9px;
             font-size: 0;
@@ -77,22 +80,22 @@ html{
             }
         }
         .caption{
-            height: 30px;
+            height: 38px;
             margin: 0 100px;
             padding: 0;
             overflow: hidden;
             color: #ccc;
             font-size: 12px;
-            line-height: 32px;
+            line-height: 40px;
             text-transform: uppercase;
         }
         .btn-toggle-list{
             position: relative;
             box-sizing: border-box;
             width: 12px;
-            height: 19px;
-            margin: 7px 10px 0 0;
-            padding: 9px 0;
+            height: 9px;
+            margin: 15px 10px 0 0;
+            padding: 4px 0;
             background-clip: content-box;
             background-color: $COLOR_TEXT - 50;
             border: none;
@@ -108,10 +111,10 @@ html{
                 transition: .3s;
             }
             &:before{
-                top: 4px;
+                top: 0;
             }
             &:after{
-                bottom: 5px;
+                bottom: 0;
             }
             &:hover{
                 background-color: $COLOR_PRIMARY;
@@ -240,8 +243,12 @@ html{
         }
     }
     .controller{
-        background-color: $COLOR_BACKGROUND;
         height: 93px;
+        background-color: $COLOR_BACKGROUND;
+        background-image:
+            linear-gradient(to top, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px),
+            linear-gradient(to left, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px);
+        background-size: 2px 2px;
         .progress-bar{
             position: relative;
             height: 1px;
@@ -428,7 +435,7 @@ html{
                 transform: translateY(4px) rotate(45deg);
             }
             &:after{
-                transform: translateY(-5px) rotate(-45deg);
+                transform: translateY(-4px) rotate(-45deg);
             }
         }
         .play-list{

@@ -42,6 +42,7 @@ window.Player = (function() {
 
         this.__guid = 1;
         this.__ready = false;
+        this.__timmer = null;
         this.__element = document.querySelector('#player');
         this.__init(playlist);
 
@@ -230,7 +231,7 @@ window.Player = (function() {
                     shadowBlur: 20
                 }
             });
-            this.vudio.dance()
+            //this.vudio.dance()
             return this;
         },
         __initEvents : function() {
@@ -245,7 +246,7 @@ window.Player = (function() {
                     });
                     __that.audio.src = this.playlist[__index].src;
                     __that.audio.crossOrigin = "anonymous";
-                    __that.audio.play();
+                    //__that.audio.play();
                 })
                 .$on('play', function() {
                     var __id = this.config.current;
@@ -264,10 +265,17 @@ window.Player = (function() {
                         __that.audio.crossOrigin = "anonymous";
                     }
                     this.temp.playing = true;
+                    //clearTimeout(__that.__timmer);
+                    //console.log(__that.__timmer);
                     __that.audio.play();
+                    __that.vudio.dance();
                 })
                 .$on('pause', function() {
                     __that.audio.pause();
+                    //__that.__timmer = setTimeout(function() {
+                        __that.vudio.pause();
+                    //}, 1000);
+                    //console.log(__that.__timmer);
                 })
                 .$on('changeVolume', function(volume) {
                     __that.audio.volume = volume;
