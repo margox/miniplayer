@@ -2,7 +2,6 @@
   "name": "miniplayer",
   "version": "1.0.0",
   "description": "a simple audio player",
-  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -16,5 +15,7 @@
     "url": "https://github.com/margox/miniplayer/issues"
   },
   "homepage": "https://github.com/margox/miniplayer",
-  "devDependencies": {}
+  "devDependencies": {
+    "gulp": "^3.9.1"
+  }
 }
