@@ -16,6 +16,7 @@
     </div>
     <div class="content">
         <div class="dashboard">
+            <button class="toggle-waveform" v-on:click="toggleWaveform()"><i class="icon-graphic_eq"></i></button>
             <div class="cover" style="background-image:url({{temp.cover || './assets/images/default.png'}});"></div>
             <div class="waveform">
                 <canvas id="waveform" width="256px" height="100px"></canvas>

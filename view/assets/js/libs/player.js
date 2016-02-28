@@ -212,6 +212,15 @@ window.Player = (function() {
                     unlock: function() {
                         this.temp.locked = false;
                     },
+                    toggleWaveform: function() {
+                        if (__that.__element.classList.contains('hide-waveform')) {
+                            __that.__element.classList.remove('hide-waveform');
+                            __that.vudio.dance();
+                        } else {
+                            __that.__element.classList.add('hide-waveform');
+                            __that.vudio.pause();
+                        }
+                    },
 
                     // advanced functions
                     selectLocalAudios: function() {
@@ -245,7 +254,8 @@ window.Player = (function() {
             this.audio.volume = this.data.config.volume;
             this.audio.muted = this.data.config.muted;
             this.audio.autobuffer = true;
-            this.vudio = new Vudio(this.audio, document.querySelector('#waveform'), {
+            this.waveform = document.querySelector('#waveform');
+            this.vudio = new Vudio(this.audio, this.waveform, {
                 waveform : {
                     maxHeight: 60,
                     width: 1,

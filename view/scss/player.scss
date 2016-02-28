@@ -29,10 +29,6 @@ html{
     height: 428px;
     overflow: hidden;
     background-color: $COLOR_BACKGROUND;
-    // border-radius: 10px;
-    //box-shadow:
-    //    0 10px 15px rgba(0,0,0,.15),
-    //    0 2px 2px rgba(0,0,0,.2);
     cursor: default;
     .initing-mask{
         @include middleCenter;
@@ -58,7 +54,7 @@ html{
             margin: 0 100px;
             padding: 0;
             overflow: hidden;
-            color: #ccc;
+            color: $COLOR_TEXT;
             font-size: 12px;
             line-height: 40px;
             text-transform: uppercase;
@@ -71,18 +67,17 @@ html{
             margin: 15px 10px 0 0;
             padding: 4px 0;
             background-clip: content-box;
-            background-color: $COLOR_TEXT - 50;
+            background-color: $COLOR_TEXT;
             border: none;
-            transition: .3s;
             &:before,
             &:after{
                 position: absolute;
                 left: 0;
                 width: 12px;
                 height: 1px;
-                background-color: $COLOR_TEXT - 50;
+                background-color: $COLOR_TEXT;
                 content: '';
-                transition: .3s;
+                transition: transform .3s;
             }
             &:before{
                 top: 0;
@@ -91,22 +86,17 @@ html{
                 bottom: 0;
             }
             &:hover{
-                background-color: $COLOR_PRIMARY;
-                &:before,
-                &:after{
-                    background-color: $COLOR_PRIMARY;
-                }
+                opacity: .8;
             }
         }
         .btn-open-folder{
             margin: 9px 3px 0 0;
-            color: $COLOR_TEXT - 50;
+            color: $COLOR_TEXT;
             font-size: 16px;
             background: none;
             border: none;
-            transition: .3s;
             &:hover{
-                color: $COLOR_PRIMARY;
+                opacity: .8;
             }
         }
     }
@@ -121,22 +111,41 @@ html{
         width: 300px;
         height: 300px;
         .cover{
-            width: 300px;
-            height: 300px;
+            @include middleCenter();
+            width: 150px;
+            height: 150px;
+            margin-top: 50px;
             background-position: 50% 50%;
-            background-size: 300px 300px;
-            transition: background .6s;
+            background-size: 150px 150px;
+            border-radius: 50%;
+            transition: .6s;
             -webkit-filter: grayscale(1);
+        }
+        .toggle-waveform{
+            position: absolute;
+            z-index: 4;
+            top: 10px;
+            left: 10px;
+            color: $COLOR_TEXT - 50;
+            font-size: 18px;
+            text-align: center;
+            line-height: 24px;;
+            background: none;
+            border: none;
+            &:hover{
+                color: $COLOR_PRIMARY;
+            }
         }
         .waveform{
             @include middleCenter(3);
             background-color: rgba(0,0,0,.5);
             background-image:
-                linear-gradient(to bottom, rgba($COLOR_TOPBAR, 1), rgba($COLOR_BACKGROUND, .5), rgba($COLOR_BACKGROUND, 1));
+                linear-gradient(to bottom, rgba($COLOR_BACKGROUND, 0), rgba($COLOR_BACKGROUND, 1));
+            transition: .3s;
             canvas{
                 width: 256px;
                 height: 160px;
-                margin: 50px 22px 0 22px;
+                margin: 45px 22px 0 22px;
             }
         }
         .meta{
@@ -230,9 +239,6 @@ html{
     .controller{
         height: 93px;
         background-color: $COLOR_BACKGROUND;
-        background-image:
-            linear-gradient(to top, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px),
-            linear-gradient(to left, rgba(#fff, .05) 1px, rgba(#fff, 0) 1px);
         background-size: 2px 2px;
         .progress-bar{
             position: relative;
@@ -251,7 +257,7 @@ html{
             &:before{
                 z-index: 0;
                 width: 100%;
-                background-color: lighten($COLOR_BACKGROUND, 20);
+                background-color: darken($COLOR_BACKGROUND, 20);
                 content: '';
                 transition: .3s;
             }
@@ -355,14 +361,12 @@ html{
             .btn-skip-next,
             .btn-play-pause{
                 box-sizing: border-box;
-                color: $COLOR_TEXT - 80;
-                background-color: lighten($COLOR_BACKGROUND, 5);
-                border: 2px solid $COLOR_PRIMARY;
-                &:hover{
-                    background-color: lighten($COLOR_BACKGROUND, 10);
-                }
+                color: $COLOR_TEXT - 40;
+                background: none;
+                background-color: darken($COLOR_BACKGROUND, 3);
+                border: none;
                 &:active{
-                    background-color: lighten($COLOR_BACKGROUND, 30);
+                    background-color: lighten($COLOR_BACKGROUND, 10);
                 }
             }
             .btn-play-pause{
@@ -391,7 +395,7 @@ html{
                 margin: 0 10px;
                 i{
                     font-size: 18px;
-                    line-height: 32px;
+                    line-height: 36px;
                 }
             }
             .btn-play-pause{
@@ -400,7 +404,7 @@ html{
                 margin: 0;
                 i{
                     font-size: 24px;
-                    line-height: 40px;
+                    line-height: 44px;
                 }
             }
         }
@@ -409,6 +413,15 @@ html{
         .initing-mask{
             opacity: 0;
         }    
+    }
+    &.hide-waveform{
+        .cover{
+            -webkit-filter: grayscale(0);
+        }
+        .waveform{
+            opacity: 0;
+            pointer-events: none;
+        }
     }
     &.show-play-list{
         .btn-toggle-list{
