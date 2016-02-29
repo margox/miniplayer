@@ -81,6 +81,7 @@ window.Player = (function() {
                 'album' : '',
                 'cover' : '',
                 'playing' : false,
+                'dancing' : false,
                 'played' : 0,
                 'buffered' : 0,
                 'playedTime' : 0,
@@ -213,13 +214,8 @@ window.Player = (function() {
                         this.temp.locked = false;
                     },
                     toggleWaveform: function() {
-                        if (__that.__element.classList.contains('hide-waveform')) {
-                            __that.__element.classList.remove('hide-waveform');
-                            __that.vudio.dance();
-                        } else {
-                            __that.__element.classList.add('hide-waveform');
-                            __that.vudio.pause();
-                        }
+                        this.temp.dancing = !this.temp.dancing;
+                        this.temp.dancing ? __that.vudio.dance() : __that.vudio.pause();
                     },
 
                     // advanced functions
@@ -268,7 +264,6 @@ window.Player = (function() {
                     shadowBlur: 20
                 }
             });
-            //this.vudio.dance()
             return this;
         },
         __initEvents : function() {
@@ -302,15 +297,12 @@ window.Player = (function() {
                         __that.audio.crossOrigin = "anonymous";
                     }
                     this.temp.playing = true;
-                    //clearTimeout(__that.__timmer);
+                    this.temp.dancing && __that.vudio.dance();
                     __that.audio.play();
-                    __that.vudio.dance();
                 })
                 .$on('pause', function() {
                     __that.audio.pause();
-                    //__that.__timmer = setTimeout(function() {
-                        __that.vudio.pause();
-                    //}, 1000);
+                    __that.vudio.pause();
                 })
                 .$on('changeVolume', function(volume) {
                     __that.audio.volume = volume;

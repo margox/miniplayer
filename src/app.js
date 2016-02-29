@@ -17,6 +17,7 @@ app.on('ready', function() {
     mainWindow = new BrowserWindow({
         'width' : 300,
         'height' : 428,
+        'icon' : './view/assets/images/app_icon.png',
         'titleBarStyle' : 'hidden-inset',
         'resizable' : false,
         'webPreferences' : {

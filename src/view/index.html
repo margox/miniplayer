@@ -5,7 +5,7 @@
     <title>MINI PLAYER</title>
     <link rel="stylesheet" href="assets/css/player.css">
 </head>
-<div class="player" v-bind:class="{'show-play-list':temp.showlist}" id="player">
+<div class="player" v-bind:class="{'show-play-list':temp.showlist, 'hide-waveform': !temp.dancing}" id="player">
     <div class="initing-mask">
         <span>Mini Player</span>
     </div>
