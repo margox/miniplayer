@@ -7,10 +7,10 @@
 At first, you must know how to work with Electron, for more information, visit http://electron.atom.io/.
 
 If you have already installed electron, you can clone this repo to your computer, then do the following steps:
-1. run 'npm install'
-2.  run 'gulp' to build the project
-3.  run 'electron .' in directory './dist' to preview the app
-4.  or package the directory './dist' to get the real app
+-  run 'npm install'
+-  run 'gulp' to build the project
+-  run 'electron .' in directory './dist' to preview the app
+-  or package the directory './dist' to get the real app
 
 > More about how to package an electron project: https://www.npmjs.com/package/electron-packager
 
