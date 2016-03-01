@@ -253,6 +253,7 @@ window.Player = (function() {
             this.waveform = document.querySelector('#waveform');
             this.vudio = new Vudio(this.audio, this.waveform, {
                 waveform : {
+                    accuracy: 128,
                     maxHeight: 60,
                     width: 1,
                     color: [
