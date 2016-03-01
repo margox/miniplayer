@@ -207,6 +207,9 @@ window.Player = (function() {
                         this.temp.totalTime = meta.duration;
                         this.temp.buffered = meta.buffered;
                     },
+                    updateCover: function(cover) {
+                        this.temp.cover = cover;
+                    },
                     lock: function() {
                         this.temp.locked = true;
                     },
@@ -238,8 +241,9 @@ window.Player = (function() {
             this.vue.$watch('config', function() {
                 localStorage['__mini_player_config__'] = JSON.stringify(this.config);
             },{deep: true});
-            this.vue.$watch('playlist', function() {
-                this.$emit('playlistchanged', this.playlist);
+            this.vue.$watch('playlist', function(playlist) {
+                console.log(playlist);
+                this.$emit('playlistchanged', playlist);
             });
             return this;
 
@@ -334,13 +338,21 @@ window.Player = (function() {
                 var __index = __that.data.playlist.findIndex(function(item) {
                     return item.id === __id;
                 });
+
                 __that.vue.initMeta({
                     name : __that.vue.playlist[__index].name,
                     artist : __that.vue.playlist[__index].artist,
-                    cover : __that.vue.playlist[__index].cover,
+                    cover : null,
                     duration : __that.audio.duration,
                     buffered : __that.audio.buffered
                 });
+                
+                new jsmediatags.Reader(__that.vue.playlist[__index].src).read({
+                    onSuccess: function(tag) {
+                        __that.vue.updateCover(__that.__getAudioCover(tag.tags.picture));
+                    }
+                });
+
             });
             this.audio.addEventListener('canplay', function() {
                 __that.vue.unlock();
@@ -409,6 +421,10 @@ window.Player = (function() {
             var __index = 0;
             var __that = this;
 
+            if (!(pathArray instanceof Array)) {
+                return;
+            }
+
             __getAudioMeta(__index);
 
             function __getAudioMeta(__index) {
@@ -420,7 +436,7 @@ window.Player = (function() {
                                 'name' : tag.tags.title,
                                 'album' : tag.tags.album,
                                 'artist' : tag.tags.artist,
-                                'cover' : __that.__getAudioCover(tag.tags.picture),
+                                //'cover' : __that.__getAudioCover(tag.tags.picture),
                                 'src' : pathArray[__index]
                             });
                             __index ++;
