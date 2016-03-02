@@ -15,7 +15,7 @@ If you have already installed electron, you can clone this repo to your computer
 > More about how to package an electron project: https://www.npmjs.com/package/electron-packager
 
 #### App Snapshots
- ![image](http://margox.github.io/miniplayer/images/1.png) ![image](http://margox.github.io/miniplayer/images/2.png) ![image](http://margox.github.io/miniplayer/images/3.png)
+ ![image](http://margox.github.io/miniplayer/images/2.png)
 
 #### Download OSX Version
 http://pan.baidu.com/s/1dEaCFCH
