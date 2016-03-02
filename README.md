@@ -7,7 +7,8 @@
 At first, you must know how to work with Electron, for more information, visit http://electron.atom.io/.
 
 If you have already installed electron, you can clone this repo to your computer, then do the following steps:
--  run 'npm install'
+-  run 'git submodule foreach git pull' to update submodules
+-  run 'npm install' to install gulp and its dependencies
 -  run 'gulp' to build the project
 -  run 'electron .' in directory './dist' to preview the app
 -  or package the directory './dist' to get the real app
@@ -18,7 +19,7 @@ If you have already installed electron, you can clone this repo to your computer
  ![image](http://margox.github.io/miniplayer/images/1.png)
 
 #### Download OSX Version
-http://pan.baidu.com/s/1dEaCFCH
+http://pan.baidu.com/s/1boxHWfl
 
 #### Credits
 - [Electron](http://electron.atom.io/)
