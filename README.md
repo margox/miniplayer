@@ -19,7 +19,7 @@ If you have already installed electron, you can clone this repo to your computer
  ![image](http://margox.github.io/miniplayer/images/1.png)
 
 #### Download OSX Version
-http://pan.baidu.com/s/1boxHWfl
+http://pan.baidu.com/s/1hryUwkO
 
 #### Credits
 - [Electron](http://electron.atom.io/)
