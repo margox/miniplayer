@@ -102,86 +102,60 @@ html{
     }
     .content{
         position: relative;
+        z-index: 2;
         width: 300px;
-        height: 300px;
+        height: 264px;
+        margin-bottom: 36px;
         overflow: hidden;
     }
     .dashboard{
         position: relative;
         width: 300px;
-        height: 300px;
+        height: 264px;
         .cover{
-            @include middleCenter();
-            width: 150px;
-            height: 150px;
+            @include middleCenter(2);
+            width: 120px;
+            height: 120px;
             margin-top: 50px;
+            overflow: hidden;
             background-position: 50% 50%;
-            background-size: 150px 150px;
+            background-size: 120px 120px;
             border-radius: 50%;
             transition: .6s;
-            -webkit-filter: grayscale(1);
-        }
-        .toggle-waveform{
-            position: absolute;
-            z-index: 4;
-            top: 10px;
-            left: 10px;
-            color: $COLOR_TEXT - 50;
-            font-size: 18px;
-            text-align: center;
-            line-height: 24px;;
-            background: none;
-            border: none;
-            &:hover{
-                color: $COLOR_PRIMARY;
-            }
-        }
-        .waveform{
-            @include middleCenter(3);
-            background-color: rgba(0,0,0,.5);
-            background-image:
-                linear-gradient(to bottom, rgba($COLOR_BACKGROUND, 0), rgba($COLOR_BACKGROUND, 1));
-            transition: .3s;
-            canvas{
-                width: 256px;
-                height: 160px;
-                margin: 45px 22px 0 22px;
-            }
         }
         .meta{
             position: absolute;
             z-index: 4;
-            bottom: 20px;
+            bottom: 10px;
             left: 0;
             width: 300px;
             height: 48px;
             h5,h6{
-                width: 200px;
+                width: 260px;
                 height: 24px;
                 margin: 0 auto;
                 padding: 0;
                 overflow: hidden;
                 line-height: 24px;
+                font-weight: 300;
                 text-transform: uppercase;
             }
             h5{
                 color: $COLOR_TEXT;
                 font-size: 18px;
-                font-weight: 500;
             }
             h6{
                 color: $COLOR_TEXT - 100;
                 font-size: 12px;
-                font-weight: 300;
             }
         }
     }
     .play-list{
         @include middleCenter(5);
         overflow: auto;
-        background-color: $COLOR_BACKGROUND;
+        background-color: $COLOR_BACKGROUND + 10;
         opacity: 0;
-        transform: translateY(10px) scale(.9);
+        transform: translateY(-100px);
         transition: .4s;
         pointer-events: none;
         .songs{
@@ -189,17 +163,17 @@ html{
             padding: 0;
             list-style: none;
             li{
-                height: 36px;
+                height: 44px;
                 padding: 0;
                 list-style: none;
-                line-height: 36px;
+                line-height: 44px;
                 &:nth-child(odd) {
-                    background-color: $COLOR_BACKGROUND + 5;
+                    background-color: $COLOR_BACKGROUND + 15;
                 }
                 span,button{
                     display: block;
-                    width: 36px;
-                    height: 36px;
+                    width: 44px;
+                    height: 44px;
                     text-align: center;
                 }
                 span{
@@ -219,8 +193,8 @@ html{
                     }
                 }
                 h6{
-                    height: 36px;
-                    margin: 0 36px;
+                    height: 44px;
+                    margin: 0 44px;
                     padding: 0 5px;
                     color: $COLOR_TEXT;
                     font-size: 12px;
@@ -237,49 +211,54 @@ html{
         }
     }
     .controller{
+        position: relative;
+        z-index: 2;
         height: 93px;
-        background-color: $COLOR_BACKGROUND;
-        background-size: 2px 2px;
         .progress-bar{
             position: relative;
-            height: 1px;
-            margin-top: -3px;
-            border-top: solid 3px rgba(#000, 0);
-            border-bottom: solid 3px rgba(#000, 0);
+            height: 5px;
+            margin: 0 60px;
+            border-radius: 5px;
+            overflow: hidden;
             &:before,
             .played,
             .buffered{
                 position: absolute;
                 top: 0;
                 left: 0;
-                height: 1px;
+                height: 5px;
+                border-radius: 3px;
             }
             &:before{
                 z-index: 0;
                 width: 100%;
-                background-color: darken($COLOR_BACKGROUND, 20);
+                background-color: lighten($COLOR_BACKGROUND, 10);
                 content: '';
                 transition: .3s;
             }
-            &:hover{
-                &:before{
-                    background-color: lighten($COLOR_BACKGROUND, 40);
-                }
-            }
             .played{
                 z-index: 2;
-                width: 12%;
-                background-color: $COLOR_PRIMARY;
+                width: 0%;
+                background-color: $COLOR_TEXT - 40;
                 transition: .1s;
-            }
-            .buffered{
-                z-index: 1;
-                width: 20%;
-                background-color: darken($COLOR_PRIMARY, 30);
             }
         }
         .times{
-            display: none;
+            position: absolute;
+            top: -8px;
+            right: 20px;
+            left: 20px;
+            height: 20px;
+            color: $COLOR_TEXT - 40;
+            font-size: 11px;
+            line-height: 20px;
+            pointer-events: none;
+            .played{
+                float: left;
+            }
+            .total{
+                float: right;
+            }
         }
         .btns{
             display: flex;
@@ -363,10 +342,9 @@ html{
                 box-sizing: border-box;
                 color: $COLOR_TEXT - 40;
                 background: none;
-                background-color: darken($COLOR_BACKGROUND, 3);
-                border: none;
+                border: solid 1px currentColor;
                 &:active{
-                    background-color: lighten($COLOR_BACKGROUND, 10);
+                    background-color: lighten($COLOR_BACKGROUND, 15);
                 }
             }
             .btn-play-pause{
@@ -390,34 +368,47 @@ html{
             }
             .btn-skip-prev,
             .btn-skip-next{
-                width: 36px;
-                height: 36px;
+                width: 30px;
+                height: 30px;
                 margin: 0 10px;
                 i{
                     font-size: 18px;
-                    line-height: 36px;
+                    line-height: 28px;
                 }
             }
             .btn-play-pause{
-                width: 44px;
-                height: 44px;
+                width: 38px;
+                height: 38px;
                 margin: 0;
                 i{
                     font-size: 24px;
-                    line-height: 44px;
+                    line-height: 36px;
                 }
             }
         }
     }
+    .waveform{
+        position: absolute;
+        z-index: 1;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        width: 256px;
+        height: 50px;
+        margin: auto;
+        transition: .3s;
+        canvas{
+            width: 256px;
+            height: 50px;
+        }
+    }
+
     &.ready{
         .initing-mask{
             opacity: 0;
         }    
     }
     &.hide-waveform{
-        .cover{
-            -webkit-filter: grayscale(0);
-        }
         .waveform{
             opacity: 0;
             pointer-events: none;

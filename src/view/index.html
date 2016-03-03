@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="assets/css/player.css">
 </head>
 <body>
-<div class="player" v-bind:class="{'show-play-list':temp.showlist, 'hide-waveform': !temp.dancing}" id="player">
+<div class="player" v-on:dblclick="toggleWaveform()" v-bind:class="{'show-play-list':temp.showlist, 'hide-waveform': !temp.dancing}" id="player">
     <div class="initing-mask">
         <span>Mini Player</span>
     </div>
@@ -17,11 +17,7 @@
     </div>
     <div class="content">
         <div class="dashboard">
-            <button class="toggle-waveform" v-on:click="toggleWaveform()"><i class="icon-graphic_eq"></i></button>
             <div class="cover" style="background-image:url({{temp.cover || './assets/images/default.png'}});"></div>
-            <div class="waveform">
-                <canvas id="waveform" width="256px" height="100px"></canvas>
-            </div>
             <div class="meta text-center">
                 <h5>{{temp.name ? temp.name : '迷你播放器'}}</h5>
                 <h6>{{temp.artist ? temp.artist : 'BY MARGOX'}}</h6>
@@ -42,8 +38,8 @@
             <span class="played" style="width:{{(temp.playedTime / temp.totalTime * 100) || 0}}%;"></span>
         </div>
         <div class="times">
-            <span class="played">{{temp.playedTime}}</span>
-            <div class="total">{{temp.titalTime}}</div>
+            <span class="played">{{temp.playedTime | sec2min}}</span>
+            <span class="total">{{temp.totalTime | sec2min}}</span>
         </div>
         <div class="btns text-center">
             <button class="btn-toggle-mode mode-{{config.mode}}" v-on:click="toggleMode()">
@@ -66,6 +62,9 @@
                 <i class="icon-volume_off"></i>
             </button>
         </div>
+    </div>
+    <div class="waveform">
+        <canvas id="waveform"></canvas>
     </div>
 </div>
 <script src="./assets/js/libs/vudio/vudio.js"></script>

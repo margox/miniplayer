@@ -51,6 +51,16 @@ window.Player = (function() {
 
     }
 
+    Vue.filter('sec2min', function(second) {
+
+        var min = Math.floor(second / 60);
+        var sec = Math.floor(second % 60);
+        sec < 10 && (sec = "0" + sec);
+        min < 10 && (min = "0" + min);
+        return min + ":" + sec;
+
+    });
+
     Player.prototype = {
 
         __init : function(playlist) {
@@ -81,7 +91,7 @@ window.Player = (function() {
                 'album' : '',
                 'cover' : '',
                 'playing' : false,
-                'dancing' : false,
+                'dancing' : true,
                 'played' : 0,
                 'buffered' : 0,
                 'playedTime' : 0,
@@ -256,17 +266,13 @@ window.Player = (function() {
             this.audio.autobuffer = true;
             this.waveform = document.querySelector('#waveform');
             this.vudio = new Vudio(this.audio, this.waveform, {
+                width: 256,
+                height: 50,
+                accuracy: 128,
                 waveform : {
-                    accuracy: 128,
-                    maxHeight: 60,
-                    width: 1,
-                    color: [
-                        [0, '#f00'],
-                        [0.5, '#f00'],
-                        [0.5, '#f90'],
-                        [1, '#f90']
-                    ],
-                    shadowBlur: 20
+                    maxHeight: 40,
+                    color: ['rgba(255,255,255,.2)', 'rgba(255,255,255,0)'],
+                    verticalAlign: 'bottom'
                 }
             });
             return this;
