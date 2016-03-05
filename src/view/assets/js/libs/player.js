@@ -1,4 +1,5 @@
 window.Player = (function() {
+    'use strict';
 
     var default_config = {
         'volume' : 0.8,
@@ -7,6 +8,7 @@ window.Player = (function() {
         'mode' : 1,
         'dancing' : true
     };
+
     var config = localStorage['__mini_player_config__'] ? JSON.parse(localStorage['__mini_player_config__']) : {};
 
     // 初始数据
