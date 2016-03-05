@@ -32,6 +32,10 @@ window.Player = (function() {
 
     // 初始化其他核心模块
     var xaudio = new XAudio();
+    xaudio.mode(appData.config.mode);
+    xaudio.volume(appData.config.volume);
+    xaudio.muted(appData.config.muted);
+    xaudio[0].autobuffer = true;
     var vudio = new Vudio(xaudio[0], waveformCanvas, {
         width: 256,
         height: 50,
@@ -44,10 +48,6 @@ window.Player = (function() {
     });
     var remote = require('electron').remote;
     var dialog = remote.require('dialog');
-
-    xaudio.mode(appData.config.mode)
-         .volume(appData.config.volume)
-         .muted(appData.config.muted);
 
     // 初始化vue
     var vue =  new Vue({
@@ -65,6 +65,7 @@ window.Player = (function() {
             },
             jumpProgress: function(event) {
                 var elepos = event.target.getBoundingClientRect();
+                console.log((event.clientX - elepos.left) / elepos.width);
                 xaudio.progress((event.clientX - elepos.left) / elepos.width * 100);
             },
             toggleMode: function() {
@@ -132,6 +133,7 @@ window.Player = (function() {
         },
         'play' : function() {
             appData.temp.playing = true;
+            appData.config.dancing && vudio.dance();
         },
         'pause' : function() {
             appData.temp.playing = false;

@@ -241,6 +241,7 @@ html{
                 width: 0%;
                 background-color: $COLOR_TEXT - 40;
                 transition: .1s;
+                pointer-events: none;
             }
         }
         .times{
