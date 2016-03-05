@@ -1,479 +1,254 @@
 window.Player = (function() {
-
     'use strict';
 
-    if (!Array.prototype.findIndex) {
+    var default_config = {
+        'volume' : 0.8,
+        'muted' : false,
+        'current' : 0,
+        'mode' : 1,
+        'dancing' : true
+    };
 
-        Array.prototype.findIndex = function(predicate) {
+    var config = localStorage['__mini_player_config__'] ? JSON.parse(localStorage['__mini_player_config__']) : {};
 
-            if (this === null) {
-                throw new TypeError('Array.prototype.findIndex called on null or undefined');
-            }
-
-            if (typeof predicate !== 'function') {
-                throw new TypeError('predicate must be a function');
-            }
-
-            var list = Object(this);
-            var length = list.length >>> 0;
-            var thisArg = arguments[1];
-            var value;
-
-            for (var i = 0; i < length; i++) {
-                value = list[i];
-                if (predicate.call(thisArg, value, i, list)) {
-                    return i;
-                }
-            }
-
-            return -1;
-
+    // 初始数据
+    var appData = {
+        playlist : [],
+        config : mergeOption(default_config, config),
+        temp : {
+            'ready' : true,
+            'name' : '',
+            'artist' : '',
+            'cover' : '',
+            'playing' : false,
+            'currentTime' : '00:00',
+            'duration' : '00:00',
+            'progress' : 0,
+            'showlist' : false
         }
+    };
 
-    }
+    // 页面元素
+    var element = document.querySelector('#player');
+    var waveformCanvas = document.querySelector('#waveform');
 
-    function getRandom(min, max) {
+    // 初始化其他核心模块
+    var xaudio = new XAudio();
+    xaudio.mode(appData.config.mode);
+    xaudio.volume(appData.config.volume);
+    xaudio.muted(appData.config.muted);
+    xaudio[0].autobuffer = true;
+    var vudio = new Vudio(xaudio[0], waveformCanvas, {
+        width: 256,
+        height: 50,
+        accuracy: 128,
+        waveform : {
+            maxHeight: 40,
+            color: ['rgba(255,255,255,.2)', 'rgba(255,255,255,0)'],
+            verticalAlign: 'bottom'
+        }
+    });
+    var remote = require('electron').remote;
+    var dialog = remote.require('dialog');
 
-        return Math.floor(min + Math.random() * (max - min));
-
-    }
-
-    function Player(playlist) {
-
-        this.__guid = 1;
-        this.__ready = false;
-        this.__timmer = null;
-        this.__element = document.querySelector('#player');
-        this.__init(playlist);
-
-        this.__remote = require('electron').remote;
-        this.__dialog = this.__remote.require('dialog');
-
-    }
-
-    Vue.filter('sec2min', function(second) {
-
-        var min = Math.floor(second / 60);
-        var sec = Math.floor(second % 60);
-        sec < 10 && (sec = "0" + sec);
-        min < 10 && (min = "0" + min);
-        return min + ":" + sec;
-
+    // 初始化vue
+    var vue =  new Vue({
+        el : element,
+        data : appData,
+        methods : {
+            toggleList: function() {
+                this.temp.showlist = !this.temp.showlist;
+            },
+            removeSong: function(index) {
+                xaudio.remove(index);
+            },
+            playSong: function(index) {
+                xaudio.play(index);
+            },
+            jumpProgress: function(event) {
+                var elepos = event.target.getBoundingClientRect();
+                console.log((event.clientX - elepos.left) / elepos.width);
+                xaudio.progress((event.clientX - elepos.left) / elepos.width * 100);
+            },
+            toggleMode: function() {
+                if (this.config.mode < 3) {
+                    this.config.mode ++;
+                } else {
+                    this.config.mode = 1;
+                }
+                xaudio.mode(this.config.mode);
+            },
+            skipPrev: function() {
+                xaudio.prev();
+            },
+            skipNext: function() {
+                xaudio.next();
+            },
+            playPause: function() {
+                xaudio.toggle();
+            },
+            changeVolume: function(event){
+                var __volume = this.config.volume * 1000000;
+                if (event.deltaY < 0) {
+                    __volume < 1000000 && (__volume += 50000);
+                } else {
+                    __volume > 0 && (__volume -= 50000);
+                }
+                __volume > 1000000 && (__volume = 1000000);
+                __volume < 0 && (__volume = 0);
+                xaudio.volume(__volume / 1000000);
+            },
+            toggleMute: function() {
+                xaudio.muted(!this.config.muted);
+            },
+            toggleWaveform: function() {
+                this.config.dancing = !this.config.dancing;
+                this.config.dancing ? vudio.dance() : vudio.pause();
+            },
+            selectLocalAudios: function() {
+                dialog.showOpenDialog({
+                    'title' : '添加本地音乐文件',
+                    'properties' : ['openFile', 'multiSelections'],
+                    'filters' : [
+                        {
+                            'name' : '音乐文件',
+                            'extensions' : ['mp3']
+                        }
+                    ]
+                }, function (data) {
+                    getLocalAudios(data);
+                });
+            }
+        }
     });
 
-    Player.prototype = {
+    vue.$watch('config', function() {
+        localStorage['__mini_player_config__'] = JSON.stringify(this.config);
+    },{deep: true});
 
-        __init : function(playlist) {
-
-            this.__initDate(playlist)
-                .__initVue()
-                .__initAudioObj()
-                .__initEvents()
-                .__ready = true;
-            this.__element.classList.add('ready');
-            return this;
-
+    xaudio.on({
+        'listload' : function(list) {
+            this.index(appData.config.current);
         },
-
-        __initDate : function(playlist) {
-
-            this.data = {};
-            this.data.playlist = (playlist instanceof Array) ? this.__buildPlayList(playlist) : [];
-            this.data.config = localStorage['__mini_player_config__'] ? JSON.parse(localStorage['__mini_player_config__']) : {
-                'volume' : 0.8,
-                'muted' : false,
-                'current' : 0,
-                'mode' : 1
-            };
-            this.data.temp = {
-                'name' : '',
-                'artist' : '',
-                'album' : '',
-                'cover' : '',
-                'playing' : false,
-                'dancing' : true,
-                'played' : 0,
-                'buffered' : 0,
-                'playedTime' : 0,
-                'totalTime' : 0,
-                'buffering' : false,
-                'showlist' : false,
-                'locked' : true
-            };
-            return this;
-
+        'listchange' : function(list) {
+            appData.playlist = JSON.parse(JSON.stringify(list));
         },
+        'play' : function() {
+            appData.temp.playing = true;
+            appData.config.dancing && vudio.dance();
+        },
+        'pause' : function() {
+            appData.temp.playing = false;
+        },
+        'ended' : function() {
+            appData.temp.playing = false;
+        },
+        'error' : function() {
+            appData.temp.playing = false;
+        },
+        'indexchange' : function(index) {
+            appData.playlist = JSON.parse(JSON.stringify(this.list()));
+            appData.config.current = index;
+        },
+        'modechange' : function(mode) {
+            appData.config.mode = mode;
+        },
+        'volumechange' : function(volume) {
+            appData.config.volume = volume;
+        },
+        'muted' : function(muted) {
+            appData.config.muted = muted;
+        },
+        'loadedmetadata' : function() {
 
-        __initVue : function() {
+            var currentSong = appData.playlist[appData.config.current];
 
-            var __that = this;
+            appData.temp.name = currentSong.name;
+            appData.temp.artist = currentSong.artist;
+            appData.temp.currentTime = xaudio.currentTime(true);
+            appData.temp.duration = xaudio.duration(true);
 
-            this.vue = new Vue({
-                el : '#player',
-                data : this.data,
-                methods : {
-                    toggleList: function() {
-                        this.temp.showlist = !this.temp.showlist;
-                    },
-                    removeSong: function(id) {
-                        var __index = this.playlist.findIndex(function(item) {
-                            return item.id === id;
-                        });
-                        this.playlist.splice(__index, 1);
-                        this.$emit('removeSong', __index);
-                    },
-                    playSong: function(id) {
-                        if (id !== this.config.current) {
-                            this.config.current = id;
-                            this.$emit('changeIndex', this.config.current);
-                            this.$emit('play');
-                        }
-                    },
-                    jumpProgress: function(event) {
-                        var elepos = event.target.getBoundingClientRect();
-                        this.$emit('jumpProgress', (event.clientX - elepos.left) / elepos.width);
-                    },
-                    toggleMode: function() {
-                        if (this.config.mode < 3) {
-                            this.config.mode ++;
-                        } else {
-                            this.config.mode = 1;
-                        }
-                        this.$emit('changeMode', this.config.mode);
-                    },
-                    skipPrev: function() {
-                        var __id = this.config.current;
-                        var __index = this.playlist.findIndex(function(item) {
-                            return item.id === __id;
-                        });
-                        if (this.config.mode === 2) {
-                            __index = getRandom(0, this.playlist.length);
-                        } else {
-                            __index = __index === 0 ? this.playlist.length - 1 : __index - 1;
-                        }
-                        this.config.current = this.playlist[__index].id;
-                        this.$emit('changeIndex', this.config.current);
-                        this.$emit('play');
-                    },
-                    playPause: function() {
-                        this.temp.playing = !this.temp.playing;
-                        this.temp.playing ? this.$emit('play') : this.$emit('pause');
-                    },
-                    skipNext: function() {
-                        var __id = this.config.current;
-                        var __index = this.playlist.findIndex(function(item) {
-                            return item.id === __id;
-                        });
-                        if (this.config.mode === 2) {
-                            __index = getRandom(0, this.playlist.length);
-                        } else {
-                            __index = __index === this.playlist.length - 1 ? 0 : __index + 1;
-                        }
-                        this.config.current = this.playlist[__index].id;
-                        this.$emit('changeIndex', this.config.current);
-                        this.$emit('play');
-                    },
-                    playNext: function() {
-                        var __id = this.config.current;
-                        var __index = this.playlist.findIndex(function(item) {
-                            return item.id === __id;
-                        });
-                        if (this.config.mode === 2) {
-                            __index = getRandom(0, this.playlist.length);
-                            this.config.current = this.playlist[__index].id;
-                        } else if (this.config.mode === 1) {
-                            __index = __index === this.playlist.length - 1 ? 0 : __index + 1;
-                            this.config.current = this.playlist[__index].id;
-                        }
-                        this.$emit('changeIndex', this.config.current);
-                        this.$emit('play');
-                    },
-                    changeVolume: function(event){
-                        var __volume = this.config.volume * 1000000;
-                        if (event.deltaY < 0) {
-                            __volume < 1000000 && (__volume += 50000);
-                        } else {
-                            __volume > 0 && (__volume -= 50000);
-                        }
-                        __volume > 1000000 && (__volume = 1000000);
-                        __volume < 0 && (__volume = 0);
-                        this.config.volume = __volume / 1000000;
-                        this.$emit('changeVolume', this.config.volume);
-                    },
-                    toggleMute: function() {
-                        this.config.muted = !this.config.muted;
-                        this.$emit('toggleMute', this.config.muted);
-                    },
-                    initMeta: function(meta) {
-                        this.temp.name = meta.name;
-                        this.temp.artist = meta.artist;
-                        this.temp.cover = meta.cover;
-                        this.temp.playedTime = 0;
-                        this.temp.totalTime = meta.duration;
-                        this.temp.buffered = meta.buffered;
-                    },
-                    updateMeta: function(meta) {
-                        this.temp.playedTime = meta.currentTime;
-                        this.temp.totalTime = meta.duration;
-                        this.temp.buffered = meta.buffered;
-                    },
-                    updateCover: function(cover) {
-                        this.temp.cover = cover;
-                    },
-                    lock: function() {
-                        this.temp.locked = true;
-                    },
-                    unlock: function() {
-                        this.temp.locked = false;
-                    },
-                    toggleWaveform: function() {
-                        this.temp.dancing = !this.temp.dancing;
-                        this.temp.dancing ? __that.vudio.dance() : __that.vudio.pause();
-                    },
-
-                    // advanced functions
-                    selectLocalAudios: function() {
-                        __that.__dialog.showOpenDialog({
-                            'title' : '添加本地音乐文件',
-                            'properties' : ['openFile', 'multiSelections'],
-                            'filters' : [
-                                {
-                                    'name' : '音乐文件',
-                                    'extensions' : ['mp3']
-                                }
-                            ]
-                        }, function (data) {
-                            __that.__getLocalAudios(data);
-                        });
-                    }
+            new jsmediatags.Reader(appData.playlist[appData.config.current].src).read({
+                onSuccess: function(tag) {
+                    appData.temp.cover = getAudioCover(tag.tags.picture);
                 }
             });
-            this.vue.$watch('config', function() {
-                localStorage['__mini_player_config__'] = JSON.stringify(this.config);
-            },{deep: true});
-            this.vue.$watch('playlist', function(playlist) {
-                console.log(playlist);
-                this.$emit('playlistchanged', playlist);
-            });
-            return this;
 
         },
+        'timeupdate' : function() {
+            appData.temp.currentTime = this.currentTime(true);
+            appData.temp.duration = this.duration(true);
+            appData.temp.progress = this.progress();
+        }
+    });
 
-        __initAudioObj : function() {
-            this.audio = new Audio();
-            this.audio.volume = this.data.config.volume;
-            this.audio.muted = this.data.config.muted;
-            this.audio.autobuffer = true;
-            this.waveform = document.querySelector('#waveform');
-            this.vudio = new Vudio(this.audio, this.waveform, {
-                width: 256,
-                height: 50,
-                accuracy: 128,
-                waveform : {
-                    maxHeight: 40,
-                    color: ['rgba(255,255,255,.2)', 'rgba(255,255,255,0)'],
-                    verticalAlign: 'bottom'
-                }
-            });
-            return this;
-        },
-        __initEvents : function() {
-            var __that = this;
+    function getAudioCover(image) {
 
-            // vue events
-            this.vue
-                .$on('changeIndex', function(index) {
-                    var __id = index;
-                    var __index = this.playlist.findIndex(function(item) {
-                        return item.id === __id;
-                    });
-                    __that.audio.src = this.playlist[__index].src;
-                    __that.audio.crossOrigin = "anonymous";
-                    //__that.audio.play();
-                })
-                .$on('play', function() {
-                    var __id = this.config.current;
-                    var __index = this.playlist.findIndex(function(item) {
-                        return item.id === __id;
-                    });
-                    if (this.playlist.length === 0 || __index > this.playlist.length - 1) {
-                        return false;
-                    }
-                    if (__index === -1) {
-                        __index = 0;
-                        this.config.current = this.playlist[__index].id;
-                    }
-                    if (!__that.audio.src) {
-                        __that.audio.src = this.playlist[__index].src;
-                        __that.audio.crossOrigin = "anonymous";
-                    }
-                    this.temp.playing = true;
-                    this.temp.dancing && __that.vudio.dance();
-                    __that.audio.play();
-                })
-                .$on('pause', function() {
-                    __that.audio.pause();
-                    __that.vudio.pause();
-                })
-                .$on('changeVolume', function(volume) {
-                    __that.audio.volume = volume;
-                })
-                .$on('toggleMute', function(muted) {
-                    __that.audio.muted = muted;
-                })
-                .$on('jumpProgress', function(progress) {
-                    if (this.temp.totalTime) {
-                        __that.audio.currentTime = this.temp.totalTime * progress;
-                    }
-                })
-                .$on('ended', function(){
-                    this.playNext();
-                    this.initMeta({
-                        name : '切换中',
-                        artist : '请稍候',
-                        cover : null,
-                        duration: 0,
-                        totalTime: 0,
-                        buffered: []
-                    });
-                });
+        var base64String = "";
 
-            // audio object events
-            this.audio.addEventListener('loadedmetadata', function() {
-                var __id = __that.data.config.current;
-                var __index = __that.data.playlist.findIndex(function(item) {
-                    return item.id === __id;
-                });
-
-                __that.vue.initMeta({
-                    name : __that.vue.playlist[__index].name,
-                    artist : __that.vue.playlist[__index].artist,
-                    cover : null,
-                    duration : __that.audio.duration,
-                    buffered : __that.audio.buffered
-                });
-                
-                new jsmediatags.Reader(__that.vue.playlist[__index].src).read({
-                    onSuccess: function(tag) {
-                        __that.vue.updateCover(__that.__getAudioCover(tag.tags.picture));
-                    }
-                });
-
-            });
-            this.audio.addEventListener('canplay', function() {
-                __that.vue.unlock();
-            });
-            this.audio.addEventListener('pause', function() {
-                __that.vue.$emit('pause');
-            });
-            this.audio.addEventListener('timeupdate', function() {
-                var __id = __that.data.config.current;
-                var __index = __that.data.playlist.findIndex(function(item) {
-                    return item.id === __id;
-                });
-                __that.vue.updateMeta({
-                    name : __that.vue.playlist[__index].name,
-                    artist : __that.vue.playlist[__index].artist,
-                    cover : __that.vue.playlist[__index].cover,
-                    currentTime : __that.audio.currentTime,
-                    duration : __that.audio.duration,
-                    buffered : __that.audio.buffered
-                });
-            });
-            this.audio.addEventListener('ended', function() {
-                __that.vue.$emit('ended');
-            });
-            this.audio.addEventListener('abort', function() {
-                __that.vue.$emit('abort');
-            });
-            this.audio.addEventListener('error', function() {
-                __that.vue.$emit('error', __that.audio.error);
-                __that.vue.$emit('pause');
-            });
-
-            return this;
-        },
-        __buildPlayList : function(list) {
-            var __result = [];
-            var __that = this;
-            list.forEach(function(item, index) {
-                if (item.src) {
-                    __result.push({
-                        'id' : __that.__getGuid(),
-                        'name' : item.name || '未知歌曲',
-                        'artist' : item.artist || '未知艺术家',
-                        'album' : item.album || '未知专辑',
-                        'cover' : item.cover || null,
-                        'trashed' : false,
-                        'src' : item.src
-                    });
-                }
-            });
-            return __result;
-        },
-        __getAudioCover : function(image) {
-            var base64String = "";
-            if (!image) {
-                return null;
-            } else {
-                for (var i = 0; i < image.data.length; i++) {
-                    base64String += String.fromCharCode(image.data[i]);
-                }
-	            return "data:" + image.format + ";base64," + window.btoa(base64String);
+        if (!image) {
+            return null;
+        } else {
+            for (var i = 0; i < image.data.length; i++) {
+                base64String += String.fromCharCode(image.data[i]);
             }
-        },
-        __getLocalAudios : function(pathArray) {
-
-            var __index = 0;
-            var __that = this;
-
-            if (!(pathArray instanceof Array)) {
-                return;
-            }
-
-            __getAudioMeta(__index);
-
-            function __getAudioMeta(__index) {
-                if (__index < pathArray.length) {
-                    new jsmediatags.Reader(pathArray[__index])
-                    .read({
-                        onSuccess: function(tag) {
-                            __that.addSongs({
-                                'name' : tag.tags.title,
-                                'album' : tag.tags.album,
-                                'artist' : tag.tags.artist,
-                                //'cover' : __that.__getAudioCover(tag.tags.picture),
-                                'src' : pathArray[__index]
-                            });
-                            __index ++;
-                            __getAudioMeta(__index);
-                        }
-                    });
-                }
-            }
-
-        },
-        __getGuid : function() {
-            this.__guid += 1;
-            return this.__guid;
-        },
-        getData : function() {
-            return this.data;
-        },
-        addSongs : function(songs) {
-            var __that = this;
-            var __tempList = [];
-            if (Object.prototype.toString.call(songs) === '[object Array]') {
-                __tempList = Array.from(__that.data.playlist);
-                Array.prototype.push.apply(__tempList, __that.__buildPlayList(songs));
-                __that.data.playlist = __tempList;
-            } else if (Object.prototype.toString.call(songs) === '[object Object]') {
-                __that.addSongs([songs]);
-            }
+            return "data:" + image.format + ";base64," + window.btoa(base64String);
         }
 
     }
 
-    return Player;
+    function getLocalAudios(pathArray) {
+
+        if (!(pathArray instanceof Array)) {
+            return;
+        }
+        getAudioMeta(pathArray, 0);
+
+    }
+
+    function mergeOption() {
+
+        var result = {}
+
+        Array.prototype.forEach.call(arguments, function(argument) {
+
+            var prop;
+            var value;
+
+            for (prop in argument) {
+                if (Object.prototype.hasOwnProperty.call(argument, prop)) {
+                    if (Object.prototype.toString.call(argument[prop]) === '[object Object]') {
+                        result[prop] = mergeOption(result[prop], argument[prop]);
+                    } else {
+                        result[prop] = argument[prop];
+                    }
+                }
+            }
+
+        });
+
+        return result;
+
+    }
+
+    function getAudioMeta(pathArray, index) {
+
+        if (index < pathArray.length) {
+            new jsmediatags.Reader(pathArray[index]).read({
+                onSuccess: function(tag) {
+                    xaudio.add({
+                        'name' : tag.tags.title,
+                        'album' : tag.tags.album,
+                        'artist' : tag.tags.artist,
+                        'src' : pathArray[index]
+                    });
+                    getAudioMeta(pathArray, index + 1);
+                }
+            });
+        }
+
+    }
+
+    return xaudio;
 
 })();

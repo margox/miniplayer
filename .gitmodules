@@ -1,3 +1,6 @@
 [submodule "src/view/assets/js/libs/vudio"]
 	path = src/view/assets/js/libs/vudio
 	url = https://github.com/margox/vudio.js.git
+[submodule "src/view/assets/js/libs/xaudio"]
+	path = src/view/assets/js/libs/xaudio
+	url = https://github.com/margox/xaudio.js

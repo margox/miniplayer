@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="assets/css/player.css">
 </head>
 <body>
-<div class="player" v-on:dblclick="toggleWaveform()" v-bind:class="{'show-play-list':temp.showlist, 'hide-waveform': !temp.dancing}" id="player">
+<div class="player" v-bind:class="{'ready' : temp.ready,'show-play-list':temp.showlist, 'hide-waveform': !config.dancing}" id="player">
     <div class="initing-mask">
         <span>Mini Player</span>
     </div>
@@ -16,30 +16,30 @@
         <h5 class="caption text-center">Mini Player</h5>
     </div>
     <div class="content">
-        <div class="dashboard">
+        <div class="dashboard" v-on:dblclick="toggleWaveform()">
             <div class="cover" style="background-image:url({{temp.cover || './assets/images/default.png'}});"></div>
             <div class="meta text-center">
-                <h5>{{temp.name ? temp.name : '迷你播放器'}}</h5>
+                <h5>{{temp.name ? temp.name : 'Mini Player'}}</h5>
                 <h6>{{temp.artist ? temp.artist : 'BY MARGOX'}}</h6>
             </div>
         </div>
         <div class="play-list">
             <ul class="songs">
-                <li v-for="song in playlist" v-bind:class="{'current': song.id === config.current}">
+                <li v-for="song in playlist" v-bind:class="{'current': song.isCurrent}">
                     <span>{{$index + 1}}</span>
-                    <button class="btn-remove" v-on:click="removeSong(song.id)"><i class="icon-highlight_remove"></i></button>
-                    <h6 v-on:dblclick="playSong(song.id)">{{song.name}}</h6>
+                    <button class="btn-remove" v-on:click="removeSong($index)"><i class="icon-highlight_remove"></i></button>
+                    <h6 v-on:dblclick="playSong($index)">{{song.name}}</h6>
                 </li>
             </ul>
         </div>
     </div>
-    <div class="controller">
+    <div class="controller" v-on:dblclick="toggleWaveform()">
         <div class="progress-bar" v-on:click="jumpProgress">
-            <span class="played" style="width:{{(temp.playedTime / temp.totalTime * 100) || 0}}%;"></span>
+            <span class="played" style="width:{{temp.progress}}%;"></span>
         </div>
         <div class="times">
-            <span class="played">{{temp.playedTime | sec2min}}</span>
-            <span class="total">{{temp.totalTime | sec2min}}</span>
+            <span class="played">{{temp.currentTime}}</span>
+            <span class="total">{{temp.duration}}</span>
         </div>
         <div class="btns text-center">
             <button class="btn-toggle-mode mode-{{config.mode}}" v-on:click="toggleMode()">
@@ -68,6 +68,7 @@
     </div>
 </div>
 <script src="./assets/js/libs/vudio/vudio.js"></script>
+<script src="./assets/js/libs/xaudio/xaudio.js"></script>
 <script src="./assets/js/libs/jsmediatags.js"></script>
 <script src="./assets/js/libs/vue.min.js"></script>
 <script src="./assets/js/libs/player.js"></script>
