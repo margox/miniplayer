@@ -310,8 +310,8 @@ html{
                     transform: scale(1.2) rotate(20deg);
                 }
                 &.mode-1 .icon-repeat,
-                &.mode-2 .icon-shuffle,
-                &.mode-3 .icon-repeat_one{
+                &.mode-2 .icon-repeat_one,
+                &.mode-3 .icon-shuffle{
                     opacity: 1;
                     transform: scale(1);
                 }
