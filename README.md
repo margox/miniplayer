@@ -25,4 +25,5 @@ http://pan.baidu.com/s/1bnVtmB9
 - [Electron](http://electron.atom.io/)
 - [Vue.js](http://vuejs.org/)
 - [Jsmediatags](https://github.com/aadsm/jsmediatags)
+- [Xaudio.js](https://github.com/margox/xaudio.js)
 - [Vudio.js](https://github.com/margox/vudio.js)
