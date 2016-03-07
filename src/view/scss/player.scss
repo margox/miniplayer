@@ -43,6 +43,19 @@ html{
         pointer-events: none;
         transition: 1s;
     }
+    .blured-background{
+        display: none;
+        position: absolute;
+        z-index: 0;
+        top: -50px;
+        right: -50px;
+        bottom: -50px;
+        left: -50px;
+        background-size: 100% 100%;
+        -webkit-filter: blur(10px);
+        transform: translate3d(0,0,0);
+        opacity: .2;
+    }
     .top-bar{
         height: 38px;
         overflow: hidden;
@@ -344,8 +357,8 @@ html{
                 color: $COLOR_TEXT - 40;
                 background: none;
                 border: solid 1px currentColor;
-                &:active{
-                    background-color: lighten($COLOR_BACKGROUND, 15);
+                &:hover{
+                    color: $COLOR_PRIMARY;
                 }
             }
             .btn-play-pause{
@@ -394,12 +407,12 @@ html{
         right: 0;
         left: 0;
         bottom: 0;
-        width: 256px;
+        width: 300px;
         height: 50px;
         margin: auto;
         transition: .3s;
         canvas{
-            width: 256px;
+            width: 300px;
             height: 50px;
         }
     }
