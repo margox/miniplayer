@@ -39,12 +39,14 @@ window.Player = (function() {
     xaudio.muted(appData.config.muted);
     xaudio[0].autobuffer = true;
     var vudio = new Vudio(xaudio[0], waveformCanvas, {
-        width: 256,
+        width: 300,
         height: 50,
         accuracy: 128,
         waveform : {
             maxHeight: 40,
-            color: ['rgba(255,255,255,.2)', 'rgba(255,255,255,0)'],
+            minHeight: 0,
+            prettify: false,
+            color: ['#252529', '#f60', '#ff0'],
             verticalAlign: 'bottom'
         }
     });
