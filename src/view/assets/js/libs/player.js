@@ -69,7 +69,6 @@ window.Player = (function() {
             },
             jumpProgress: function(event) {
                 var elepos = event.target.getBoundingClientRect();
-                console.log((event.clientX - elepos.left) / elepos.width);
                 xaudio.progress((event.clientX - elepos.left) / elepos.width * 100);
             },
             toggleMode: function() {
@@ -126,7 +125,7 @@ window.Player = (function() {
 
     vue.$watch('config', function() {
         localStorage['__mini_player_config__'] = JSON.stringify(this.config);
-    },{deep: true});
+    }, {deep: true});
 
     xaudio.on({
         'listload' : function(list) {
